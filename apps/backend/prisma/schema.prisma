@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  SOCIAL_MEDIA_MANAGER
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  FACEBOOK
+  TIKTOK
+  PINTEREST
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+enum ClientStatus {
+  LEAD
+  ACTIVE
+  COMPLETED
+  INACTIVE
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          Role     @default(EDITOR)
+  avatar        String?
+  isActive      Boolean  @default(true)
+  refreshToken  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  blogPosts     BlogPost[]
+  socialPosts   SocialPost[]
+  projects      Project[]
+  media         Media[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Client {
+  id          String        @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String        @unique
+  phone       String?
+  company     String?
+  address     String?
+  city        String?
+  country     String?
+  status      ClientStatus  @default(LEAD)
+  notes       String?
+  source      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  projects    Project[]
+
+  @@index([email])
+  @@index([status])
+  @@map("clients")
+}
+
+model Project {
+  id              String         @id @default(cuid())
+  title           String
+  description     String?
+  status          ProjectStatus  @default(PLANNING)
+  startDate       DateTime?
+  endDate         DateTime?
+  budget          Float?
+  location        String?
+  featured        Boolean        @default(false)
+  clientId        String
+  userId          String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  client          Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user            User           @relation(fields: [userId], references: [id])
+  portfolioItems  PortfolioItem[]
+  media           Media[]
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([status])
+  @@index([featured])
+  @@map("projects")
+}
+
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  tags        String[]
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  projectId   String
+  coverImage  String?
+  images      String[]
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([category])
+  @@index([featured])
+  @@index([published])
+  @@map("portfolio_items")
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String
+  coverImage  String?
+  category    String
+  tags        String[]
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  authorId    String
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation(fields: [authorId], references: [id])
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([category])
+  @@index([published])
+  @@index([featured])
+  @@map("blog_posts")
+}
+
+model SocialPost {
+  id            String         @id @default(cuid())
+  caption       String
+  platforms     SocialPlatform[]
+  status        PostStatus     @default(DRAFT)
+  scheduledFor  DateTime?
+  publishedAt   DateTime?
+  hashtags      String[]
+  mediaUrls     String[]
+  aiGenerated   Boolean        @default(false)
+  authorId      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  author        User           @relation(fields: [authorId], references: [id])
+  analytics     SocialAnalytics[]
+
+  @@index([authorId])
+  @@index([status])
+  @@index([scheduledFor])
+  @@map("social_posts")
+}
+
+model SocialAnalytics {
+  id            String   @id @default(cuid())
+  postId        String
+  platform      SocialPlatform
+  likes         Int      @default(0)
+  comments      Int      @default(0)
+  shares        Int      @default(0)
+  views         Int      @default(0)
+  reach         Int      @default(0)
+  engagement    Float    @default(0)
+  fetchedAt     DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  post          SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([platform])
+  @@map("social_analytics")
+}
+
+model Media {
+  id            String   @id @default(cuid())
+  filename      String
+  originalName  String
+  mimeType      String
+  size          Int
+  url           String
+  thumbnailUrl  String?
+  cloudinaryId  String?
+  width         Int?
+  height        Int?
+  projectId     String?
+  uploadedById  String
+  tags          String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  uploadedBy    User     @relation(fields: [uploadedById], references: [id])
+
+  @@index([projectId])
+  @@index([uploadedById])
+  @@index([mimeType])
+  @@map("media")
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  source    String   @default("website")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([read])
+  @@index([createdAt])
+  @@map("contact_submissions")
+}
+
+model SystemSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}

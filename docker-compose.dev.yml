@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rajiv-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rajiv_platform
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - rajiv-dev-network
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../docker/backend/Dockerfile
+      target: development
+    container_name: rajiv-backend-dev
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rajiv_platform?schema=public
+      NODE_ENV: development
+      BACKEND_PORT: 4000
+      JWT_SECRET: dev-secret-key-change-in-production
+      JWT_REFRESH_SECRET: dev-refresh-secret-key
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    networks:
+      - rajiv-dev-network
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: rajiv-n8n-dev
+    restart: unless-stopped
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: admin
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_dev_data:/home/node/.n8n
+      - ./n8n/workflows:/workflows
+    networks:
+      - rajiv-dev-network
+
+volumes:
+  postgres_dev_data:
+  n8n_dev_data:
+
+networks:
+  rajiv-dev-network:
+    driver: bridge

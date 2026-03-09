@@ -1,0 +1,104 @@
+{
+  "name": "AI Caption Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-caption",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "generate-caption"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "imageUrl": "={{$json.body.imageUrl}}",
+        "options": {
+          "detail": "high"
+        }
+      },
+      "name": "Analyze Image with GPT-4 Vision",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "1",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a social media expert for an interior design company. Generate engaging captions for interior design photos."
+            },
+            {
+              "role": "user",
+              "content": "Based on this image analysis: {{$json.description}}\n\nCreate an engaging Instagram caption for this interior design photo. Include:\n1. A catchy opening line\n2. Brief description highlighting key design elements\n3. A call-to-action\n4. 5-8 relevant hashtags\n\nKeep it under 150 words and make it conversational."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.8,
+          "maxTokens": 300
+        }
+      },
+      "name": "Generate Caption with GPT-4",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "1",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const caption = $json.choices[0].message.content;\nconst lines = caption.split('\\n');\nconst hashtagLine = lines.find(line => line.includes('#'));\nconst hashtags = hashtagLine ? hashtagLine.match(/#\\w+/g).map(h => h.replace('#', '')) : [];\nconst captionText = lines.filter(line => !line.includes('#')).join('\\n').trim();\n\nreturn {\n  caption: captionText,\n  hashtags: hashtags,\n  fullText: caption\n};"
+      },
+      "name": "Extract Caption and Hashtags",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}"
+      },
+      "name": "Return Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{"node": "Analyze Image with GPT-4 Vision", "type": "main", "index": 0}]]
+    },
+    "Analyze Image with GPT-4 Vision": {
+      "main": [[{"node": "Generate Caption with GPT-4", "type": "main", "index": 0}]]
+    },
+    "Generate Caption with GPT-4": {
+      "main": [[{"node": "Extract Caption and Hashtags", "type": "main", "index": 0}]]
+    },
+    "Extract Caption and Hashtags": {
+      "main": [[{"node": "Return Response", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "2"
+}

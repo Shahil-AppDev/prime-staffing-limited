@@ -1,0 +1,97 @@
+{
+  "name": "Lead Notification System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-notification",
+        "options": {}
+      },
+      "name": "Webhook - New Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "lead-notification"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.EMAIL_FROM}}",
+        "toEmail": "={{$env.CONTACT_EMAIL}}",
+        "subject": "🎯 New Lead: {{$json.body.name}}",
+        "emailType": "html",
+        "message": "<h2>New Contact Form Submission</h2>\n<p><strong>Name:</strong> {{$json.body.name}}</p>\n<p><strong>Email:</strong> {{$json.body.email}}</p>\n<p><strong>Phone:</strong> {{$json.body.phone}}</p>\n<p><strong>Message:</strong></p>\n<p>{{$json.body.message}}</p>\n<hr>\n<p><small>Submitted at: {{$now.format('YYYY-MM-DD HH:mm:ss')}}</small></p>"
+      },
+      "name": "Send Email to Admin",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 200],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.EMAIL_FROM}}",
+        "toEmail": "={{$json.body.email}}",
+        "subject": "Thank you for contacting Rajiv Interiors",
+        "emailType": "html",
+        "message": "<h2>Thank You for Your Interest!</h2>\n<p>Dear {{$json.body.name}},</p>\n<p>Thank you for reaching out to Rajiv Interiors. We've received your message and one of our design consultants will get back to you within 24 hours.</p>\n<p>In the meantime, feel free to explore our portfolio and recent projects on our website.</p>\n<br>\n<p>Best regards,<br>The Rajiv Interiors Team</p>"
+      },
+      "name": "Send Auto-Response to Client",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 400],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://backend:4000/api/clients",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{$json.body.name.split(' ')[0]}}\",\n  \"lastName\": \"{{$json.body.name.split(' ').slice(1).join(' ')}}\",\n  \"email\": \"{{$json.body.email}}\",\n  \"phone\": \"{{$json.body.phone}}\",\n  \"status\": \"LEAD\",\n  \"source\": \"Website Contact Form\",\n  \"notes\": \"{{$json.body.message}}\"\n}",
+        "options": {
+          "method": "POST"
+        }
+      },
+      "name": "Create CRM Entry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\": true, \"message\": \"Lead notification sent\"}"
+      },
+      "name": "Return Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - New Lead": {
+      "main": [[
+        {"node": "Send Email to Admin", "type": "main", "index": 0},
+        {"node": "Send Auto-Response to Client", "type": "main", "index": 0},
+        {"node": "Create CRM Entry", "type": "main", "index": 0}
+      ]]
+    },
+    "Create CRM Entry": {
+      "main": [[{"node": "Return Success", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "3"
+}

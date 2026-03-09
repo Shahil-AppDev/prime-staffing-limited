@@ -1,0 +1,141 @@
+{
+  "name": "Social Media Analytics Collector",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Daily at 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:4000/api/social-posts?status=PUBLISHED",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get Published Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const posts = $json;\nconst results = [];\n\nfor (const post of posts) {\n  for (const platform of post.platforms) {\n    results.push({\n      postId: post.id,\n      platform: platform,\n      publishedAt: post.publishedAt\n    });\n  }\n}\n\nreturn results;"
+      },
+      "name": "Split Posts by Platform",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.platform}}",
+              "value2": "INSTAGRAM"
+            }
+          ]
+        }
+      },
+      "name": "Is Instagram",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/{{$env.INSTAGRAM_ACCOUNT_ID}}/media?fields=like_count,comments_count,media_url,timestamp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Fetch Instagram Insights",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.platform}}",
+              "value2": "FACEBOOK"
+            }
+          ]
+        }
+      },
+      "name": "Is Facebook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/{{$env.FACEBOOK_PAGE_ID}}/posts?fields=likes.summary(true),comments.summary(true),shares",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Fetch Facebook Insights",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:4000/api/analytics/social",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"postId\": \"{{$json.postId}}\",\n  \"platform\": \"{{$json.platform}}\",\n  \"likes\": {{$json.likes || 0}},\n  \"comments\": {{$json.comments || 0}},\n  \"shares\": {{$json.shares || 0}},\n  \"views\": {{$json.views || 0}},\n  \"reach\": {{$json.reach || 0}}\n}",
+        "options": {
+          "method": "POST"
+        }
+      },
+      "name": "Save Analytics to Database",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Daily at 8 AM": {
+      "main": [[{"node": "Get Published Posts", "type": "main", "index": 0}]]
+    },
+    "Get Published Posts": {
+      "main": [[{"node": "Split Posts by Platform", "type": "main", "index": 0}]]
+    },
+    "Split Posts by Platform": {
+      "main": [[{"node": "Is Instagram", "type": "main", "index": 0}, {"node": "Is Facebook", "type": "main", "index": 0}]]
+    },
+    "Is Instagram": {
+      "main": [[{"node": "Fetch Instagram Insights", "type": "main", "index": 0}]]
+    },
+    "Is Facebook": {
+      "main": [[{"node": "Fetch Facebook Insights", "type": "main", "index": 0}]]
+    },
+    "Fetch Instagram Insights": {
+      "main": [[{"node": "Save Analytics to Database", "type": "main", "index": 0}]]
+    },
+    "Fetch Facebook Insights": {
+      "main": [[{"node": "Save Analytics to Database", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "4"
+}

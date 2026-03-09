@@ -1,0 +1,33 @@
+{
+  "name": "rajiv-social-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Social Media Marketing Platform for Interior Decor Company",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "test": "turbo run test",
+    "db:generate": "cd apps/backend && pnpm prisma generate",
+    "db:migrate": "cd apps/backend && pnpm prisma migrate dev",
+    "db:push": "cd apps/backend && pnpm prisma db push",
+    "db:seed": "cd apps/backend && pnpm prisma db seed",
+    "db:studio": "cd apps/backend && pnpm prisma studio",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:down": "docker-compose down"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "puppeteer": "^24.38.0",
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

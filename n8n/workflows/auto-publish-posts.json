@@ -1,0 +1,193 @@
+{
+  "name": "Auto-Publish Scheduled Social Posts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:4000/api/social-posts/scheduled",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get Scheduled Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.scheduledFor}}",
+              "operation": "isNotEmpty"
+            }
+          ],
+          "dateTime": [
+            {
+              "value1": "={{$json.scheduledFor}}",
+              "operation": "before",
+              "value2": "={{$now}}"
+            }
+          ]
+        }
+      },
+      "name": "Check If Time to Publish",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const platforms = $json.platforms;\nconst results = [];\n\nfor (const platform of platforms) {\n  results.push({\n    postId: $json.id,\n    platform: platform,\n    caption: $json.caption,\n    mediaUrls: $json.mediaUrls,\n    hashtags: $json.hashtags\n  });\n}\n\nreturn results;"
+      },
+      "name": "Split by Platform",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.platform}}",
+              "value2": "INSTAGRAM"
+            }
+          ]
+        }
+      },
+      "name": "Is Instagram",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 100]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/{{$env.INSTAGRAM_ACCOUNT_ID}}/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_url",
+              "value": "={{$json.mediaUrls[0]}}"
+            },
+            {
+              "name": "caption",
+              "value": "={{$json.caption}} {{$json.hashtags.map(h => '#' + h).join(' ')}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Publish to Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.platform}}",
+              "value2": "FACEBOOK"
+            }
+          ]
+        }
+      },
+      "name": "Is Facebook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/{{$env.FACEBOOK_PAGE_ID}}/photos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{$json.mediaUrls[0]}}"
+            },
+            {
+              "name": "message",
+              "value": "={{$json.caption}} {{$json.hashtags.map(h => '#' + h).join(' ')}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Publish to Facebook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:4000/api/social-posts/={{$json.postId}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"status\": \"PUBLISHED\", \"publishedAt\": \"{{$now}}\"}",
+        "options": {
+          "method": "PATCH"
+        }
+      },
+      "name": "Update Post Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1450, 200]
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [[{"node": "Get Scheduled Posts", "type": "main", "index": 0}]]
+    },
+    "Get Scheduled Posts": {
+      "main": [[{"node": "Check If Time to Publish", "type": "main", "index": 0}]]
+    },
+    "Check If Time to Publish": {
+      "main": [[{"node": "Split by Platform", "type": "main", "index": 0}]]
+    },
+    "Split by Platform": {
+      "main": [[{"node": "Is Instagram", "type": "main", "index": 0}, {"node": "Is Facebook", "type": "main", "index": 0}]]
+    },
+    "Is Instagram": {
+      "main": [[{"node": "Publish to Instagram", "type": "main", "index": 0}]]
+    },
+    "Is Facebook": {
+      "main": [[{"node": "Publish to Facebook", "type": "main", "index": 0}]]
+    },
+    "Publish to Instagram": {
+      "main": [[{"node": "Update Post Status", "type": "main", "index": 0}]]
+    },
+    "Publish to Facebook": {
+      "main": [[{"node": "Update Post Status", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "1"
+}
