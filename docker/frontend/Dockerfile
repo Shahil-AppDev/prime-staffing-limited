@@ -23,9 +23,10 @@ FROM base AS runner
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/apps/frontend/node_modules ./apps/frontend/node_modules
 COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next ./apps/frontend/.next
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/frontend/package.json ./apps/frontend/package.json
 USER nextjs
 WORKDIR /app/apps/frontend

@@ -74,6 +74,8 @@ services:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
       - NEXT_PUBLIC_ADMIN_URL=https://admin.primestaffingltd.com
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
     ports:
       - "3010:3000"
     networks:
