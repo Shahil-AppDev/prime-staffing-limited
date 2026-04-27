@@ -11,7 +11,7 @@ jobs:
   deploy:
     name: Deploy Prime Staffing Ltd
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,29 +31,146 @@ jobs:
           HOST: ${{ secrets.HETZNER_HOST }}
           USER: ${{ secrets.HETZNER_USER }}
           PORT: ${{ secrets.HETZNER_PORT }}
-        run: |
+        run: "echo \"🚀 Starting deployment for Prime Staffing Ltd...\"
+
+
+          # Create deployment directory if it doesn't exist
+
+          ssh -p ${PORT} ${USER}@${HOST} \"mkdir -p /var/www/primestaffing/app\"
+
+
+          # Sync files to server (excluding node_modules, .git, etc.)
+
+          echo \"📦 Syncing files to server...\"
+
+          rsync -avz --delete \\
+
+          \  --exclude 'node_modules' \\
+
+          \  --exclude '.next' \\
+
+          \  --exclude 'dist' \\
+
+          \  --exclude '.git' \\
+
+          \  --exclude '.env.local' \\
+
+          \  --exclude 'prime-staffing.tar.gz' \\
+
+          \  --exclude 'screenshot-*.png' \\
+
+          \  -e \"ssh -p ${PORT}\" \\
+
+          \  ./ ${USER}@${HOST}:/var/www/primestaffing/app/
+
+
+          # Run deployment on server
+
           ssh -p ${PORT} ${USER}@${HOST} << 'ENDSSH'
-            set -e
-            
-            echo "🚀 Starting deployment for Prime Staffing Ltd..."
-            
-            # Navigate to project directory
-            cd /var/www/primestaffing/app
-            
-            # Pull latest code
-            echo "📥 Pulling latest code from GitHub..."
-            git fetch origin
-            git reset --hard origin/main || git reset --hard origin/master
-            
-            # Make deployment script executable
-            chmod +x scripts/deploy-production.sh
-            
-            # Run deployment script
-            echo "🔧 Running deployment script..."
-            ./scripts/deploy-production.sh
-            
-            echo "✅ Deployment completed successfully!"
-          ENDSSH
+
+          \  set -e
+
+          \ \ 
+
+          \  echo \"📍 Current directory:\"
+
+          \  pwd
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"📂 Navigating to project directory...\"
+
+          \  cd /var/www/primestaffing/app || { echo \"❌ ERROR: Cannot access
+          /var/www/primestaffing/app\"; exit 1; }
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"📋 Directory contents:\"
+
+          \  ls -la | head -20
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"\udd0d Checking required files...\"
+
+          \  if [ ! -f \"docker-compose.prod.yml\" ]; then
+
+          \    echo \"❌ ERROR: docker-compose.prod.yml not found!\"
+
+          \    exit 1
+
+          \  fi
+
+          \  echo \"✓ docker-compose.prod.yml exists\"
+
+          \ \ 
+
+          \  if [ ! -f \".env.production\" ]; then
+
+          \    echo \"❌ ERROR: .env.production not found!\"
+
+          \    echo \"Please create .env.production with production
+          configuration\"
+
+          \    exit 1
+
+          \  fi
+
+          \  echo \"✓ .env.production exists\"
+
+          \ \ 
+
+          \  if [ ! -f \"scripts/deploy-production.sh\" ]; then
+
+          \    echo \"❌ ERROR: scripts/deploy-production.sh not found!\"
+
+          \    exit 1
+
+          \  fi
+
+          \  echo \"✓ scripts/deploy-production.sh exists\"
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"🐋 Checking Docker...\"
+
+          \  docker --version || { echo \"❌ ERROR: Docker not installed!\"; exit
+          1; }
+
+          \  docker compose version || { echo \"❌ ERROR: Docker Compose not
+          installed!\"; exit 1; }
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"🔧 Making deployment script executable...\"
+
+          \  chmod +x scripts/deploy-production.sh
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"\ude80 Running deployment script...\"
+
+          \  ./scripts/deploy-production.sh
+
+          \ \ 
+
+          \  echo \"\"
+
+          \  echo \"✅ Deployment completed successfully!\"
+
+          ENDSSH\n"
 
       - name: Verify Deployment
         env:
@@ -63,11 +180,18 @@ jobs:
         run: |
           ssh -p ${PORT} ${USER}@${HOST} << 'ENDSSH'
             echo "🔍 Verifying deployment..."
+            echo ""
             
-            # Check container status
+            cd /var/www/primestaffing/app
+            
+            # Check Docker Compose config
+            echo "📋 Docker Compose configuration:"
+            docker compose -f docker-compose.prod.yml config --services || { echo "❌ ERROR: Invalid docker-compose.prod.yml"; exit 1; }
+            
+            echo ""
+            echo "🐳 Container status:"
             docker ps --filter "name=prime-staffing" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
             
-            # Health check
             echo ""
             echo "🏥 Running health checks..."
             
@@ -76,6 +200,8 @@ jobs:
               echo "✅ Backend container is running"
             else
               echo "❌ Backend container is NOT running"
+              echo "📜 Backend logs:"
+              docker logs prime-staffing-backend --tail 50 2>&1 || echo "No logs available"
               exit 1
             fi
             
@@ -83,6 +209,8 @@ jobs:
               echo "✅ Frontend container is running"
             else
               echo "❌ Frontend container is NOT running"
+              echo "📜 Frontend logs:"
+              docker logs prime-staffing-frontend --tail 50 2>&1 || echo "No logs available"
               exit 1
             fi
             
@@ -90,8 +218,23 @@ jobs:
               echo "✅ Admin container is running"
             else
               echo "❌ Admin container is NOT running"
+              echo "📜 Admin logs:"
+              docker logs prime-staffing-admin --tail 50 2>&1 || echo "No logs available"
               exit 1
             fi
+            
+            if docker ps | grep -q "prime-staffing-db"; then
+              echo "✅ Database container is running"
+            else
+              echo "❌ Database container is NOT running"
+              echo "📜 Database logs:"
+              docker logs prime-staffing-db --tail 50 2>&1 || echo "No logs available"
+              exit 1
+            fi
+            
+            echo ""
+            echo "📊 Recent logs from backend:"
+            docker logs prime-staffing-backend --tail 20 2>&1 || echo "No logs available"
             
             echo ""
             echo "🎉 All health checks passed!"

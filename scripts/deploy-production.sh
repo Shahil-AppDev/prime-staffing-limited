@@ -37,6 +37,15 @@ if [ ! -f ".env.production" ]; then
 fi
 print_success ".env.production found"
 
+# Check if docker-compose.prod.yml exists
+if [ ! -f "docker-compose.prod.yml" ]; then
+    print_error "docker-compose.prod.yml file not found!"
+    print_info "Expected location: $(pwd)/docker-compose.prod.yml"
+    ls -la docker-compose*.yml 2>/dev/null || print_info "No docker-compose files found"
+    exit 1
+fi
+print_success "docker-compose.prod.yml found"
+
 # Load environment variables
 export $(cat .env.production | grep -v '^#' | xargs)
 
