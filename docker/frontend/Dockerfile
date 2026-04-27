@@ -11,13 +11,13 @@ RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/apps/frontend/node_modules ./apps/frontend/node_modules
 COPY apps/frontend ./apps/frontend
-WORKDIR /app/apps/frontend
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-RUN pnpm build
+RUN pnpm --filter @rajiv/frontend build
 
 FROM base AS runner
 WORKDIR /app
