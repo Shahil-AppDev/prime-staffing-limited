@@ -27,8 +27,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Prime Concept Decor API')
-    .setDescription('API documentation for Prime Concept Decor interior design platform')
+    .setTitle('Prime Staffing Ltd API')
+    .setDescription('Backend API for Prime Staffing Ltd recruitment platform')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

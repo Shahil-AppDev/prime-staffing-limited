@@ -1,26 +1,41 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { analyticsApi } from '@/lib/api'
-import { 
-  FolderKanban, 
-  Users, 
-  FileText, 
+import { useQuery } from '@tanstack/react-query'
+import {
+  Calendar,
+  FileText,
+  FolderKanban,
   Share2,
-  TrendingUp,
-  Calendar
+  Users
 } from 'lucide-react'
 
 export default function DashboardPage() {
-  const { data: analytics, isLoading } = useQuery({
+  const { data: analytics, isLoading, error } = useQuery({
     queryKey: ['analytics'],
     queryFn: analyticsApi.getDashboard,
+    retry: 1,
   })
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-600">Loading dashboard...</p>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    console.error('Dashboard error:', error)
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load dashboard data</p>
+          <p className="text-gray-500 text-sm">Using default values</p>
+        </div>
       </div>
     )
   }

@@ -1,16 +1,72 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { blogApi } from '@/lib/api'
-import Link from 'next/link'
-import { formatDate } from '@/lib/utils'
+import { useQuery } from '@tanstack/react-query'
 import { Calendar, User } from 'lucide-react'
+import Link from 'next/link'
+
+const MOCK_POSTS = [
+  {
+    id: '1',
+    slug: 'top-hiring-trends-2024',
+    title: 'Top Hiring Trends to Watch in 2024',
+    excerpt: 'Discover the latest trends shaping the recruitment landscape and how to stay ahead in talent acquisition.',
+    publishedAt: '2024-03-15',
+    author: { firstName: 'Sarah', lastName: 'Johnson' }
+  },
+  {
+    id: '2',
+    slug: 'remote-work-recruitment',
+    title: 'Recruiting for Remote Positions: Best Practices',
+    excerpt: 'Learn effective strategies for finding and hiring top remote talent in today\'s distributed workforce.',
+    publishedAt: '2024-03-10',
+    author: { firstName: 'Michael', lastName: 'Chen' }
+  },
+  {
+    id: '3',
+    slug: 'candidate-experience-matters',
+    title: 'Why Candidate Experience Matters More Than Ever',
+    excerpt: 'Explore how improving candidate experience can boost your employer brand and attract better talent.',
+    publishedAt: '2024-03-05',
+    author: { firstName: 'Emma', lastName: 'Williams' }
+  },
+  {
+    id: '4',
+    slug: 'ai-recruitment-tools',
+    title: 'AI-Powered Recruitment: Tools and Strategies',
+    excerpt: 'How artificial intelligence is transforming the recruitment process and improving hiring outcomes.',
+    publishedAt: '2024-02-28',
+    author: { firstName: 'Sarah', lastName: 'Johnson' }
+  },
+  {
+    id: '5',
+    slug: 'executive-search-guide',
+    title: 'Executive Search: A Complete Guide',
+    excerpt: 'Everything you need to know about finding and hiring C-level executives for your organization.',
+    publishedAt: '2024-02-20',
+    author: { firstName: 'Michael', lastName: 'Chen' }
+  },
+  {
+    id: '6',
+    slug: 'diversity-hiring',
+    title: 'Building Diverse Teams: Recruitment Strategies',
+    excerpt: 'Practical approaches to creating more diverse and inclusive hiring processes.',
+    publishedAt: '2024-02-15',
+    author: { firstName: 'Emma', lastName: 'Williams' }
+  }
+]
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
 
 export default function BlogPage() {
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, isLoading, error } = useQuery({
     queryKey: ['blog'],
     queryFn: blogApi.getAll,
   })
+
+  const displayPosts = error ? MOCK_POSTS : (posts || MOCK_POSTS)
 
   return (
     <div>
@@ -33,13 +89,14 @@ export default function BlogPage() {
         <div className="container-custom">
           {isLoading ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">Loading posts...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              <p className="text-gray-600 mt-4">Loading articles...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts?.map((post: any) => (
-                <Link 
-                  key={post.id} 
+              {displayPosts?.map((post: any) => (
+                <Link
+                  key={post.id}
                   href={`/blog/${post.slug}`}
                   className="card group"
                 >

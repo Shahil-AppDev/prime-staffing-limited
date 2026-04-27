@@ -5,6 +5,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import { ClientsModule } from './clients/clients.module';
+import { HealthModule } from './health/health.module';
 import { MediaModule } from './media/media.module';
 import { N8nModule } from './n8n/n8n.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -36,3 +37,4 @@ import { UsersModule } from './users/users.module';
   ],
 })
 export class AppModule {}
+555

@@ -4,16 +4,18 @@ import { Providers } from '@/components/providers'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { FloatingActionButton } from '@/components/ui/floating-action-button'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Prime Concept Decor - Expert Interior Design & Decoration Services',
-  description: 'Transform your space with Prime Concept Decor. Award-winning interior design and decoration services for residential and commercial projects. Professional 3D visualization, space planning, and custom design solutions.',
-  keywords: 'interior design, interior decoration, home decor, commercial design, residential design, space planning, 3D visualization, interior designer, home renovation, office design, restaurant design, prime concept decor',
-  authors: [{ name: 'Prime Concept Decor' }],
-  creator: 'Prime Concept Decor',
-  publisher: 'Prime Concept Decor',
+  title: 'Prime Staffing Ltd - Professional Staffing & Recruitment Solutions',
+  description: 'Transform your workforce with Prime Staffing Ltd. Award-winning staffing and recruitment services for businesses of all sizes. Professional talent acquisition, temporary staffing, and permanent placement solutions.',
+  keywords: 'staffing agency, recruitment services, talent acquisition, temporary staffing, permanent placement, workforce solutions, hiring solutions, employment agency, job placement, prime staffing ltd',
+  authors: [{ name: 'Prime Staffing Ltd' }],
+  creator: 'Prime Staffing Ltd',
+  publisher: 'Prime Staffing Ltd',
   robots: {
     index: true,
     follow: true,
@@ -29,14 +31,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'http://localhost:3000',
-    title: 'Prime Concept Decor - Expert Interior Design & Decoration',
-    description: 'Transform your space with expert interior design services. Residential & commercial projects.',
-    siteName: 'Prime Concept Decor',
+    title: 'Prime Staffing Ltd - Professional Staffing & Recruitment Solutions',
+    description: 'Transform your workforce with Prime Staffing Ltd. Award-winning staffing and recruitment services for businesses of all sizes. Professional talent acquisition, temporary staffing, and permanent placement solutions.',
+    siteName: 'Prime Staffing Ltd',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prime Concept Decor - Expert Interior Design',
-    description: 'Transform your space with expert interior design services.',
+    title: 'Prime Staffing Ltd - Professional Staffing Solutions',
+    description: 'Transform your workforce with expert staffing and recruitment services.',
   },
 }
 
@@ -46,16 +48,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans`}>
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <ScrollProgress />
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+          <FloatingActionButton />
         </Providers>
       </body>
     </html>

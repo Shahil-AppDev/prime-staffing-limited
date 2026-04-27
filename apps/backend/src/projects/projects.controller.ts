@@ -1,23 +1,20 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Projects')
 @Controller('projects')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all projects' })
+  @ApiOperation({ summary: 'Get all projects (public)' })
   findAll() {
     return this.projectsService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get project by ID' })
+  @ApiOperation({ summary: 'Get project by ID (public)' })
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
   }

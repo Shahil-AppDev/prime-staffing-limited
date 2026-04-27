@@ -1,0 +1,113 @@
+name: Deploy to Hetzner VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Prime Staffing Ltd
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HETZNER_SSH_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.HETZNER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Hetzner
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+          PORT: ${{ secrets.HETZNER_PORT }}
+        run: |
+          ssh -p ${PORT} ${USER}@${HOST} << 'ENDSSH'
+            set -e
+            
+            echo "🚀 Starting deployment for Prime Staffing Ltd..."
+            
+            # Navigate to project directory
+            cd /var/www/primestaffing/app
+            
+            # Pull latest code
+            echo "📥 Pulling latest code from GitHub..."
+            git fetch origin
+            git reset --hard origin/main || git reset --hard origin/master
+            
+            # Make deployment script executable
+            chmod +x scripts/deploy-production.sh
+            
+            # Run deployment script
+            echo "🔧 Running deployment script..."
+            ./scripts/deploy-production.sh
+            
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
+
+      - name: Verify Deployment
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+          PORT: ${{ secrets.HETZNER_PORT }}
+        run: |
+          ssh -p ${PORT} ${USER}@${HOST} << 'ENDSSH'
+            echo "🔍 Verifying deployment..."
+            
+            # Check container status
+            docker ps --filter "name=prime-staffing" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+            
+            # Health check
+            echo ""
+            echo "🏥 Running health checks..."
+            
+            # Check if containers are running
+            if docker ps | grep -q "prime-staffing-backend"; then
+              echo "✅ Backend container is running"
+            else
+              echo "❌ Backend container is NOT running"
+              exit 1
+            fi
+            
+            if docker ps | grep -q "prime-staffing-frontend"; then
+              echo "✅ Frontend container is running"
+            else
+              echo "❌ Frontend container is NOT running"
+              exit 1
+            fi
+            
+            if docker ps | grep -q "prime-staffing-admin"; then
+              echo "✅ Admin container is running"
+            else
+              echo "❌ Admin container is NOT running"
+              exit 1
+            fi
+            
+            echo ""
+            echo "🎉 All health checks passed!"
+          ENDSSH
+
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "🌐 Frontend: https://primestaffingltd.com"
+          echo "🔐 Admin: https://admin.primestaffingltd.com"
+          echo "🔌 API: https://api.primestaffingltd.com"
+
+      - name: Deployment Failed
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Check the logs above for details."
+          exit 1

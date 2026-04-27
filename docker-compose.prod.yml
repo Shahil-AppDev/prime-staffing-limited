@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prime-staffing-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-primestaffing_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-PrimeStaff2026SecurePass}
+      POSTGRES_DB: ${POSTGRES_DB:-primestaffing_db}
+    volumes:
+      - /var/www/primestaffing/data/postgres:/var/lib/postgresql/data
+    networks:
+      - prime-staffing-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-primestaffing_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5433:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: prime-staffing-backend
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-primestaffing_user}:${POSTGRES_PASSWORD:-PrimeStaff2026SecurePass}@postgres:5432/${POSTGRES_DB:-primestaffing_db}?schema=public
+    ports:
+      - "4012:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - prime-staffing-network
+    command: sh -c "cd /app/apps/backend && npx prisma generate && npx prisma migrate deploy && npx prisma db seed && node dist/main.js"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
+        - NEXT_PUBLIC_SITE_URL=https://primestaffingltd.com
+    container_name: prime-staffing-frontend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
+      - NEXT_PUBLIC_SITE_URL=https://primestaffingltd.com
+    ports:
+      - "3009:3000"
+    networks:
+      - prime-staffing-network
+    depends_on:
+      - backend
+
+  admin:
+    build:
+      context: .
+      dockerfile: docker/admin/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
+        - NEXT_PUBLIC_ADMIN_URL=https://admin.primestaffingltd.com
+    container_name: prime-staffing-admin
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
+      - NEXT_PUBLIC_ADMIN_URL=https://admin.primestaffingltd.com
+    ports:
+      - "3010:3000"
+    networks:
+      - prime-staffing-network
+    depends_on:
+      - backend
+
+networks:
+  prime-staffing-network:
+    name: prime-staffing-network
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

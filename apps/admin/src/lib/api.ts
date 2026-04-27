@@ -18,15 +18,41 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response?.status, error.response?.data)
+    return Promise.reject(error)
+  }
+)
+
 // Auth API
 export const authApi = {
   login: async (email: string, password: string) => {
-    const { data } = await api.post('/auth/login', { email, password })
-    if (data.accessToken) {
-      localStorage.setItem('token', data.accessToken)
-      localStorage.setItem('user', JSON.stringify(data.user))
+    try {
+      console.log('🔐 Admin Login: Attempting login for:', email)
+      console.log('🔗 API URL:', API_URL)
+      
+      const response = await api.post('/auth/login', { email, password })
+      console.log('✅ Login response:', response.data)
+      
+      const { data } = response
+      
+      if (data.accessToken) {
+        console.log('💾 Storing token and user data')
+        localStorage.setItem('token', data.accessToken)
+        localStorage.setItem('user', JSON.stringify(data.user))
+      } else {
+        console.warn('⚠️ No accessToken in response')
+      }
+      
+      return data
+    } catch (error: any) {
+      console.error('❌ Login failed:', error)
+      console.error('Error details:', error.response?.data)
+      throw error
     }
-    return data
   },
   logout: async () => {
     await api.post('/auth/logout')

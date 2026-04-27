@@ -1,4 +1,4 @@
-import { Users, Award, Heart, Target } from 'lucide-react'
+import { Award, Heart, Target, Users } from 'lucide-react'
 
 export default function AboutPage() {
   return (
@@ -8,10 +8,10 @@ export default function AboutPage() {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl font-display font-bold text-gray-900 mb-6">
-              About Rajiv Interiors
+              About <span className="gradient-text">Prime Staffing Ltd</span>
             </h1>
             <p className="text-xl text-gray-600">
-              Passionate about creating beautiful, functional spaces that inspire and delight
+              Connecting exceptional talent with outstanding opportunities since 2015
             </p>
           </div>
         </div>
@@ -27,19 +27,19 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 text-gray-600">
                 <p>
-                  Founded in 2015, Rajiv Interiors has been transforming spaces and exceeding client 
-                  expectations for over 8 years. What started as a passion project has grown into a 
-                  full-service interior design firm serving residential and commercial clients.
+                  Founded in 2015, Prime Staffing Ltd has been connecting exceptional talent with outstanding
+                  opportunities for over 9 years. What started as a boutique recruitment agency has grown into a
+                  comprehensive staffing solutions provider serving businesses across multiple industries.
                 </p>
                 <p>
-                  Our founder, Rajiv Kumar, brings over 15 years of experience in interior design 
-                  and architecture. His vision was to create a design firm that combines aesthetic 
-                  excellence with practical functionality, always putting the client's needs first.
+                  Our leadership team brings over 20 years of combined experience in recruitment, talent acquisition,
+                  and workforce management. Our vision was to create a staffing agency that combines cutting-edge
+                  technology with personalized service, always putting both clients and candidates first.
                 </p>
                 <p>
-                  Today, our team of talented designers works on projects ranging from intimate 
-                  residential renovations to large-scale commercial developments. Every project 
-                  receives the same level of dedication and attention to detail.
+                  Today, our team of dedicated recruiters works on placements ranging from temporary staffing
+                  to executive search. We've successfully placed over 5,000 professionals and maintain a 95%
+                  client satisfaction rate. Every placement receives the same level of care and attention.
                 </p>
               </div>
             </div>
@@ -131,18 +131,18 @@ const values = [
 
 const team = [
   {
-    name: 'Rajiv Kumar',
-    role: 'Founder & Lead Designer',
-    bio: '15+ years of experience in interior design and architecture',
+    name: 'Sarah Johnson',
+    role: 'CEO & Founder',
+    bio: '15+ years of experience in recruitment and talent acquisition',
   },
   {
-    name: 'Sophie Martin',
-    role: 'Senior Designer',
-    bio: 'Specializes in residential and hospitality design',
+    name: 'Michael Chen',
+    role: 'Head of Executive Search',
+    bio: 'Specializes in C-level and senior management placements',
   },
   {
-    name: 'Alex Thompson',
-    role: 'Project Manager',
-    bio: 'Ensures seamless execution from concept to completion',
+    name: 'Emma Williams',
+    role: 'Director of Operations',
+    bio: 'Ensures seamless candidate experience and client satisfaction',
   },
 ]

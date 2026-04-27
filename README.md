@@ -1,6 +1,6 @@
-# 🏢 Prime Concept Decor - Full-Stack Interior Design Platform
+# 🏢 Prime Staffing Ltd Platform
 
-A complete production-ready monorepo platform for interior design business management. This platform features a public website, admin dashboard, backend API, and social media automation system for Prime Concept Decor.
+A modern, full-stack staffing and recruitment platform built with Next.js, NestJS, and PostgreSQL.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
@@ -73,156 +73,11 @@ A complete production-ready monorepo platform for interior design business manag
 - Cloudinary account
 - OpenAI API key (for AI features)
 - Social media API credentials
-htt://ghub.cm/YOUR_USERNAME/pime-conceptdecos.git
-## pQmeickn et-decs
-
-### 1. Clone the Repository
-
-```bash
-git clone <repository-url>
-cd rajiv-social-platform
-```
-
-### 2. Install Dependencies
-
-```bash
-pnpm install
-```
-
-### 3. Environment Setup
-
-Copy the example environment file and configure:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your credentials:
-
-```env
-# Database
-DATABASE_URL="postgresql://prime_user:prime_password@localhost:5432/prime_platform?schema=public"
-
-# JWT Secrets (generate secure random strings)
-JWT_SECRET=your-super-secret-jwt-key
-JWT_REFRESH_SECRET=your-super-secret-refresh-key
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-# OpenAI
-OPENAI_API_KEY=your-openai-api-key
-
-# Social Media
-INSTAGRAM_ACCESS_TOKEN=your-instagram-token
-FACEBOOK_ACCESS_TOKEN=your-facebook-token
-FACEBOOK_PAGE_ID=your-page-id
-```
-
-### 4. Database Setup
-
-```bash
-# Generate Prisma client
-pnpm db:generate
-
-# Run migrations
-pnpm db:migrate
-
-# Seed database with sample data
-pnpm db:seed
-```
-
-### 5. Start Development
-
-```bash
-# Start all services with Docker
-pnpm docker:dev
-
-# Or start services individually
-cd apps/backend && pnpm dev
-cd apps/frontend && pnpm dev
-cd apps/admin && pnpm dev
-```
-
-## 🐳 Docker Deployment
-
-### Development
-
-```bash
-docker-compose -f docker-compose.dev.yml up
-```
-
-### Production
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-## 📚 API Documentation
-
-Once the backend is running, access the Swagger documentation at:
-
-```
-http://localhost:4000/api/docs
-```
-
-## 🔐 Default Credentials
-
-After seeding the database, use these credentials to login:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@primeconceptdecor.com | Admin123! |
-| Editor | editor@primeconceptdecor.com | Admin123! |
-| Social Manager | social@primeconceptdecor.com | Admin123! |
-
-**⚠️ Change these passwords immediately in production!**
-
-## 🔧 Configuration
-
-### n8n Workflows
-
-Import the pre-configured workflows:
-
-1. Access n8n at `http://localhost:5678`
-2. Login with credentials from `.env`
-3. Import workflows from `n8n/workflows/`
-
-Available workflows:
-- **Auto-Publish Posts**: Automatically publishes scheduled social media posts
-- **AI Caption Generator**: Generates captions using GPT-4 Vision
-- **Lead Notification**: Sends email notifications for new leads
-- **Social Analytics**: Collects daily analytics from social platforms
-
-### Social Media Setup
-
-#### Instagram
-1. Create a Facebook App
-2. Add Instagram Basic Display
-3. Get access token
-4. Add to `.env`
-
-#### Facebook
-1. Create Facebook Page
-2. Get Page Access Token
-3. Add to `.env`
-
-#### TikTok & Pinterest
-Follow official API documentation for setup.
 
 ## 📁 Project Structure
 
 ```
-prime-concept-decors/
+prime-staffing-ltd/
 ├── apps/
 │   ├── backend/          # NestJS API (Port 4000)
 │   ├── frontend/         # Public website (Port 3000)
@@ -257,7 +112,7 @@ The platform uses the following main entities:
 
 - **Users**: Admin users with role-based permissions
 - **Clients**: CRM client database
-- **Projects**: Interior design projects
+- **Projects**: Staffing projects
 - **PortfolioItems**: Showcase projects
 - **BlogPosts**: Content marketing
 - **SocialPosts**: Social media content
@@ -338,16 +193,16 @@ docker-compose logs -f backend
 
 Once deployed, the platform will be accessible at:
 
-- **Public Website:** https://primeconceptdecor.com
-- **Admin Dashboard:** https://admin.primeconceptdecor.com
-- **API:** https://api.primeconceptdecor.com
+- **Public Website:** https://primestaffing.com
+- **Admin Dashboard:** https://admin.primestaffing.com
+- **API:** https://api.primestaffing.com
 
 ## 🆘 Support
 
 For issues and questions:
 - Check documentation in `docs/` folder
 - Review API docs at `/api/docs`
-- Email: contact@primeconceptdecor.com
+- **Email:** `social@primestaffing.com`
 
 ## 🎯 Roadmap
 
@@ -363,8 +218,8 @@ For issues and questions:
 
 ## 📄 License
 
-Proprietary - Prime Concept Decor © 2026. All rights reserved.
+Proprietary - Prime Staffing Ltd. All rights reserved.
 
 ---
 
-**Built with ❤️ by Prime Concept Decor Team**
+**Built with ❤️ by Prime Staffing Ltd Team**

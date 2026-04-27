@@ -12,7 +12,7 @@ async function main() {
     where: { email: 'admin@primeconceptdecor.com' },
     update: {},
     create: {
-      email: 'admin@primeconceptdecor.com',
+      email: 'admin@primestaffing.com',
       password: hashedPassword,
       firstName: 'Prime',
       lastName: 'Admin',
@@ -25,7 +25,7 @@ async function main() {
     where: { email: 'editor@primeconceptdecor.com' },
     update: {},
     create: {
-      email: 'editor@primeconceptdecor.com',
+      email: 'editor@primestaffing.com',
       password: hashedPassword,
       firstName: 'Content',
       lastName: 'Editor',
@@ -38,7 +38,7 @@ async function main() {
     where: { email: 'social@primeconceptdecor.com' },
     update: {},
     create: {
-      email: 'social@primeconceptdecor.com',
+      email: 'social@primestaffing.com',
       password: hashedPassword,
       firstName: 'Social',
       lastName: 'Manager',

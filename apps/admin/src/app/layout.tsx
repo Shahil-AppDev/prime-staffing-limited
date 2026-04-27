@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Prime Concept Admin - Dashboard',
-  description: 'Admin dashboard for Prime Concept Decor',
+  title: 'Prime Staffing Ltd - Admin Dashboard',
+  description: 'Admin dashboard for Prime Staffing Ltd recruitment platform',
 }
 
 export default function RootLayout({
