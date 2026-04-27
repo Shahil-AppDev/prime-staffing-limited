@@ -21,93 +21,34 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
-          script: "set -euxo pipefail
-
-
-            echo \"🚀 Starting Prime Staffing Limited deployment\"
-
-
+          script: |
+            set -e
+            echo "Starting Prime Staffing Limited deployment"
             mkdir -p /var/www/primestaffing
-
             cd /var/www/primestaffing
-
-
-            if [ ! -d app/.git ]; then echo \"📥 Fresh clone\"
-
-            rm -rf app
-
-            git clone -b master
-            https://github.com/Shahil-AppDev/prime-staffing-limited.git app fi
-
-
+            if [ ! -d app/.git ]; then
+              echo "Fresh clone"
+              rm -rf app
+              git clone -b master https://github.com/Shahil-AppDev/prime-staffing-limited.git app
+            fi
             cd /var/www/primestaffing/app
-
-
-            echo \"\udccc Current directory\"
-
-            pwd
-
-            ls -la
-
-
-            echo \"\udd01 Pull latest code\"
-
+            echo "Pull latest code"
             git fetch origin master
-
             git reset --hard origin/master
-
-
-            echo \"🔐 Check production env\"
-
-            test -f .env.production || (echo \"❌ Missing .env.production on
-            server\" && exit 1)
-
-
-            echo \"🐳 Docker versions\"
-
+            echo "Check production env"
+            test -f .env.production || (echo "Missing .env.production on server" && exit 1)
+            echo "Docker versions"
             docker --version
-
             docker compose version
-
-
-            echo \"🧪 Validate compose\"
-
-            docker compose -f docker-compose.prod.yml --env-file .env.production
-            config
-
-
-            echo \"🏗️ Build and restart containers\"
-
-            docker compose -f docker-compose.prod.yml --env-file .env.production
-            up -d --build
-
-
-            echo \"🧬 Prisma setup\"
-
-            docker compose -f docker-compose.prod.yml exec -T backend pnpm
-            prisma migrate deploy || true
-
-            docker compose -f docker-compose.prod.yml exec -T backend pnpm
-            prisma generate || true
-
-
-            echo \"📊 Container status\"
-
+            echo "Build and restart containers"
+            docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+            echo "Prisma setup"
+            docker compose -f docker-compose.prod.yml exec -T backend pnpm prisma migrate deploy || true
+            docker compose -f docker-compose.prod.yml exec -T backend pnpm prisma generate || true
+            echo "Container status"
             docker compose -f docker-compose.prod.yml ps
-
-
-            echo \"🔍 Health checks\"
-
+            echo "Health checks"
             curl -I http://127.0.0.1:3009 || true
-
             curl -I http://127.0.0.1:3010 || true
-
-            curl -I http://127.0.0.1:4012/api/health || true
-
-
-            echo \"\udcdc Recent logs\"
-
-            docker compose -f docker-compose.prod.yml logs --tail=100
-
-
-            echo \"✅ Deployment completed\"\n"
+            curl -I http://127.0.0.1:4012 || true
+            echo "Deployment completed"
