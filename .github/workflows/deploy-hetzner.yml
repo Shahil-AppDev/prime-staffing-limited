@@ -32,16 +32,12 @@ jobs:
             cd /var/www/primestaffing
 
 
-            if [ ! -d app/.git ]; then
+            if [ ! -d app/.git ]; then echo \"📥 Fresh clone\"
 
-            \  echo \"📥 Fresh clone\"
+            rm -rf app
 
-            \  rm -rf app
-
-            \  git clone -b master
-            https://github.com/Shahil-AppDev/prime-staffing-limited.git app
-
-            fi
+            git clone -b master
+            https://github.com/Shahil-AppDev/prime-staffing-limited.git app fi
 
 
             cd /var/www/primestaffing/app
