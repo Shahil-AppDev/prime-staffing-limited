@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, Lightbulb, Palette, Shield, Snowflake, Sparkles, Star, TrendingUp, Zap } from 'lucide-react'
+import { ArrowRight, Lightbulb, Palette, Shield, Sparkles, Star, TrendingUp, Zap } from 'lucide-react'
 import Link from 'next/link'
 
 const fadeInUp = {
