@@ -29,7 +29,11 @@ jobs:
             if [ ! -d app/.git ]; then
               echo "Fresh clone"
               rm -rf app
-              git clone -b master https://github.com/Shahil-AppDev/prime-concept-decors.git app
+              git clone -b master https://x-access-token:${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Shahil-AppDev/prime-staffing-limited.git app
+            else
+              cd app
+              git remote set-url origin https://x-access-token:${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Shahil-AppDev/prime-staffing-limited.git
+              cd ..
             fi
             cd /var/www/primestaffing/app
             echo "Pull latest code"
