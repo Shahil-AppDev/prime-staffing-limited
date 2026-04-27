@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, Lightbulb, Palette, Shield, Sparkles, Star, TrendingUp, Zap } from 'lucide-react'
+import { ArrowRight, Lightbulb, Palette, Shield, Snowflake, Sparkles, Star, TrendingUp, Zap } from 'lucide-react'
 import Link from 'next/link'
 
 const fadeInUp = {
@@ -384,50 +384,4 @@ const testimonials = [
   },
 ]
 
-const divisions = [
-  {
-    title: 'Prime Precision Cooling',
-    description: 'Expert HVAC and refrigeration solutions for commercial and industrial applications.',
-    icon: Snowflake,
-    iconBg: 'from-blue-500 to-cyan-500',
-    gradientFrom: 'from-blue-500',
-    gradientTo: 'to-cyan-500',
-    href: '/services/cooling',
-    services: [
-      'Commercial HVAC installation',
-      'Industrial refrigeration systems',
-      'Preventive maintenance programs',
-      'Emergency repair services',
-    ],
-  },
-  {
-    title: 'Electrical Services',
-    description: 'Comprehensive electrical solutions from installation to maintenance and emergency repairs.',
-    icon: Zap,
-    iconBg: 'from-yellow-500 to-orange-500',
-    gradientFrom: 'from-yellow-500',
-    gradientTo: 'to-orange-500',
-    href: '/services/electrical',
-    services: [
-      'Commercial electrical installations',
-      'Industrial power systems',
-      'Lighting design and installation',
-      '24/7 emergency call-out',
-    ],
-  },
-  {
-    title: 'Plumbing Services',
-    description: 'Professional plumbing services for commercial properties and industrial facilities.',
-    icon: Droplet,
-    iconBg: 'from-blue-600 to-indigo-600',
-    gradientFrom: 'from-blue-600',
-    gradientTo: 'to-indigo-600',
-    href: '/services/plumbing',
-    services: [
-      'Commercial plumbing installation',
-      'Drainage and sewage systems',
-      'Water treatment solutions',
-      'Leak detection and repair',
-    ],
-  },
-]
+
