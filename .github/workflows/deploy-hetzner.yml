@@ -1,11 +1,9 @@
-name: Deploy to Hetzner VPS
+name: Deploy Prime Staffing Limited to Hetzner
 
 on:
   push:
     branches:
-      - main
       - master
-  workflow_dispatch:
 
 jobs:
   deploy:
