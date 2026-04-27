@@ -1,7 +1,6 @@
 FROM node:20-alpine AS base
-
 WORKDIR /app
-
+RUN apk add --no-cache openssl libc6-compat
 RUN npm install -g pnpm
 
 FROM base AS dependencies
@@ -17,6 +16,7 @@ ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm --filter @rajiv/frontend build
 
 FROM base AS runner

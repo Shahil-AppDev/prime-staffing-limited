@@ -20,10 +20,8 @@ COPY . .
 RUN pnpm prisma generate
 RUN pnpm run build
 
-FROM node:20-alpine AS production
+FROM base AS production
 WORKDIR /app
-RUN npm install -g pnpm
-
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 COPY apps/backend/prisma ./apps/backend/prisma
