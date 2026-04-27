@@ -1,10 +1,7 @@
 FROM node:20-alpine AS base
 
 WORKDIR /app
-
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
-
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
 RUN npm install -g pnpm
 
 FROM base AS development
