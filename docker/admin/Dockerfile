@@ -11,13 +11,14 @@ RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/apps/admin/node_modules ./apps/admin/node_modules
 COPY apps/admin ./apps/admin
-WORKDIR /app/apps/admin
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_ADMIN_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
-RUN pnpm build
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN pnpm --filter @rajiv/admin build
 
 FROM base AS runner
 WORKDIR /app
