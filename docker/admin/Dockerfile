@@ -2,39 +2,33 @@ FROM node:20-alpine AS base
 
 WORKDIR /app
 
-COPY package*.json ./
-
 RUN npm install -g pnpm
 
 FROM base AS dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/admin/package.json ./apps/admin/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY . .
+COPY apps/admin ./apps/admin
+WORKDIR /app/apps/admin
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ADMIN_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
+RUN pnpm build
 
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN pnpm run build
-
-FROM node:20-alpine AS runner
+FROM base AS runner
 WORKDIR /app
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
+COPY --from=builder /app/apps/admin/public ./apps/admin/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin/.next ./apps/admin/.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/admin/package.json ./apps/admin/package.json
 USER nextjs
-
+WORKDIR /app/apps/admin
 EXPOSE 3000
-
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["node", "server.js"]
+ENV NODE_ENV=production
+CMD ["pnpm", "start"]
