@@ -61,7 +61,13 @@ print_success "Old images cleaned"
 
 # Build and start containers
 print_info "Building and starting containers..."
-docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
+if ! docker compose -f docker-compose.prod.yml up -d --build --remove-orphans; then
+    print_error "Failed to build and start containers!"
+    print_info "Checking Docker Compose logs..."
+    docker compose -f docker-compose.prod.yml logs --tail 100
+    exit 1
+fi
+print_success "Containers started"
 
 # Wait for services to be healthy
 print_info "Waiting for services to be healthy..."
