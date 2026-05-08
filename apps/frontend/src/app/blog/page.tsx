@@ -95,16 +95,15 @@ export default function BlogPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {displayPosts?.map((post: any) => (
-                <Link
+                <div
                   key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className="card group overflow-hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800"
+                  className="card overflow-hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800"
                 >
                   <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-slate-800">
                     <img
                       src="/placeholders/blog-default.svg"
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-6">
@@ -118,12 +117,12 @@ export default function BlogPage() {
                         {post.author.firstName} {post.author.lastName}
                       </span>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                       {post.title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 line-clamp-3">{post.excerpt}</p>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}
