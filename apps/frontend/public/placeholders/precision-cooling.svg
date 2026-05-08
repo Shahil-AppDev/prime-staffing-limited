@@ -1,0 +1,21 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cooling-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#cooling-gradient)"/>
+  <g opacity="0.1">
+    <circle cx="180" cy="140" r="90" fill="white"/>
+    <circle cx="620" cy="460" r="110" fill="white"/>
+  </g>
+  <g transform="translate(400, 250)">
+    <circle cx="0" cy="0" r="75" fill="white" opacity="0.2"/>
+    <path d="M0,-40 L8,-20 L25,-25 L10,-10 L20,5 L0,0 L-20,5 L-10,-10 L-25,-25 L-8,-20 Z" fill="white"/>
+    <path d="M0,-15 L5,0 L15,3 L5,8 L8,18 L0,12 L-8,18 L-5,8 L-15,3 L-5,0 Z" fill="white" opacity="0.7"/>
+    <circle cx="0" cy="0" r="5" fill="white"/>
+  </g>
+  <text x="400" y="380" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="white" text-anchor="middle">PRIME PRECISION COOLING</text>
+  <text x="400" y="415" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.9" text-anchor="middle">Plumbing • Electrical • Air Conditioning</text>
+</svg>

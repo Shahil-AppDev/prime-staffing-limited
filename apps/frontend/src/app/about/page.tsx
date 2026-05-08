@@ -1,5 +1,5 @@
-import { Building2, Target, Award, Users, CheckCircle } from 'lucide-react'
 import { primeGroupInfo } from '@/lib/prime-group-data'
+import { Building2, CheckCircle, Target } from 'lucide-react'
 
 export const metadata = {
   title: 'About Prime Group Ltd | Diversified Business Group in Mauritius',
@@ -35,13 +35,13 @@ export default function AboutPage() {
                 {primeGroupInfo.description}
               </p>
               <p>
-                Based in Quatre Bornes, Mauritius, Prime Group Ltd brings together expertise across six specialized sectors, 
-                each operating as an independent sister company with dedicated teams and resources. Our diversified approach 
-                allows us to serve a wide range of industries while maintaining the highest standards of quality and professionalism 
+                Based in Quatre Bornes, Mauritius, Prime Group Ltd brings together expertise across six specialized sectors,
+                each operating as an independent sister company with dedicated teams and resources. Our diversified approach
+                allows us to serve a wide range of industries while maintaining the highest standards of quality and professionalism
                 in each sector.
               </p>
               <p>
-                From residential projects to large-scale commercial and industrial solutions, Prime Group Ltd delivers 
+                From residential projects to large-scale commercial and industrial solutions, Prime Group Ltd delivers
                 comprehensive services backed by local expertise, modern equipment, and a commitment to customer satisfaction.
               </p>
             </div>
@@ -52,6 +52,13 @@ export default function AboutPage() {
       {/* Vision & Mission */}
       <section className="section-padding bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="container-custom">
+          <div className="text-center max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 leading-relaxed">
+              Prime Group Ltd is led by experienced professionals dedicated to delivering excellence across all our business sectors.
+              Our management team brings together expertise in decoration, technical services, logistics, renewable energy, manufacturing,
+              and healthcare distribution to serve our clients throughout Mauritius.
+            </p>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="card p-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 mb-6">
@@ -148,8 +155,8 @@ export default function AboutPage() {
               Proudly Serving Mauritius
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed mb-8">
-              Prime Group Ltd is headquartered in Quatre Bornes and serves clients across Mauritius. 
-              Our local presence, combined with our diverse expertise, makes us a trusted partner for 
+              Prime Group Ltd is headquartered in Quatre Bornes and serves clients across Mauritius.
+              Our local presence, combined with our diverse expertise, makes us a trusted partner for
               residential, commercial, and industrial projects throughout the island.
             </p>
             <div className="card p-8 bg-gradient-to-br from-gray-50 to-blue-50">

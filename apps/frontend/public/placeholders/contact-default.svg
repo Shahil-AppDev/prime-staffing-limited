@@ -1,0 +1,21 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="contact-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#contact-gradient)"/>
+  <g opacity="0.1">
+    <circle cx="178" cy="138" r="89" fill="white"/>
+    <circle cx="622" cy="462" r="109" fill="white"/>
+  </g>
+  <g transform="translate(400, 250)">
+    <circle cx="0" cy="0" r="75" fill="white" opacity="0.2"/>
+    <rect x="-40" y="-30" width="80" height="60" rx="8" fill="white"/>
+    <path d="M-40,-30 L0,0 L40,-30" stroke="#14b8a6" stroke-width="3" fill="none"/>
+    <circle cx="25" cy="15" r="3" fill="#14b8a6"/>
+  </g>
+  <text x="400" y="380" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">GET IN TOUCH</text>
+  <text x="400" y="415" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.9" text-anchor="middle">Contact Prime Group</text>
+</svg>
