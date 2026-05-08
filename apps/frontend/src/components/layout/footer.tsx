@@ -95,8 +95,19 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-400 mb-2">
             &copy; {new Date().getFullYear()} Prime Group Ltd. All rights reserved.
+          </p>
+          <p className="text-sm text-gray-500">
+            Créé et développé par Shahil AppDev -{' '}
+            <a
+              href="https://www.francenum.gouv.fr/activateurs/shahil-appdev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 transition-colors underline"
+            >
+              Activateurs France Numérique
+            </a>
           </p>
         </div>
       </div>
