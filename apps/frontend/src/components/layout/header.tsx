@@ -29,12 +29,12 @@ export function Header() {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="relative text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 font-semibold transition-colors group"
+                className="relative text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 font-semibold transition-colors group whitespace-nowrap"
               >
                 {item.name}
                 <motion.div
@@ -46,17 +46,18 @@ export function Header() {
               </Link>
             ))}
             <DarkModeToggle />
-            <Link href="/contact" className="btn-primary !py-3 !px-6">
+            <Link href="/contact" className="btn-primary !py-3 !px-6 whitespace-nowrap">
               Get Started
             </Link>
           </div>
 
-          <div className="md:hidden flex items-center gap-3">
+          <div className="lg:hidden flex items-center gap-3">
             <DarkModeToggle />
             <motion.button
-              className="p-2 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/20"
+              className="p-3 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               whileTap={{ scale: 0.95 }}
+              aria-label="Toggle menu"
             >
               <AnimatePresence mode="wait">
                 {mobileMenuOpen ? (
@@ -92,7 +93,7 @@ export function Header() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
+              className="lg:hidden overflow-hidden"
             >
               <div className="py-6 space-y-2">
                 {navigation.map((item, index) => (
@@ -104,7 +105,7 @@ export function Header() {
                   >
                     <Link
                       href={item.href}
-                      className="block px-6 py-3 text-gray-700 dark:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-800/60 backdrop-blur-xl rounded-2xl font-semibold transition-all hover:scale-105"
+                      className="block px-6 py-4 text-gray-700 dark:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-800/60 backdrop-blur-xl rounded-2xl font-semibold transition-all hover:scale-105 min-h-[44px] flex items-center"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {item.name}
@@ -119,7 +120,7 @@ export function Header() {
                 >
                   <Link
                     href="/contact"
-                    className="btn-primary w-full text-center"
+                    className="btn-primary w-full text-center min-h-[44px] flex items-center justify-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Get Started
