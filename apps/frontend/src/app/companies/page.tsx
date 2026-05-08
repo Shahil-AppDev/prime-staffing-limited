@@ -1,6 +1,6 @@
-import { Paintbrush, Snowflake, Truck, Leaf, Blinds, Heart, ArrowRight, Phone, Mail } from 'lucide-react'
-import Link from 'next/link'
 import { sisterCompanies } from '@/lib/prime-group-data'
+import { ArrowRight, Blinds, Building2, Heart, Leaf, Mail, Paintbrush, Phone, Snowflake, Truck } from 'lucide-react'
+import Link from 'next/link'
 
 const iconMap: Record<string, any> = {
   Paintbrush,
@@ -23,7 +23,7 @@ export default function CompaniesPage() {
       <section className="section-padding bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.2),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.2),transparent_50%)]" />
-        
+
         <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
@@ -41,8 +41,8 @@ export default function CompaniesPage() {
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sisterCompanies.map((company, index) => {
-              const IconComponent = iconMap[company.icon]
-              
+              const IconComponent = iconMap[company.icon] || Building2
+
               return (
                 <Link
                   key={company.slug}
@@ -52,7 +52,7 @@ export default function CompaniesPage() {
                   <div className="card p-8 h-full hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                     {/* Icon */}
                     <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${company.accentColor} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                      {IconComponent && <IconComponent className="h-8 w-8 text-white" />}
+                      <IconComponent className="h-8 w-8 text-white" />
                     </div>
 
                     {/* Company Name */}

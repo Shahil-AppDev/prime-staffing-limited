@@ -1,9 +1,9 @@
 'use client'
 
+import { primeGroupInfo, sisterCompanies } from '@/lib/prime-group-data'
 import { motion } from 'framer-motion'
-import { ArrowRight, Building2, Phone, Paintbrush, Snowflake, Truck, Leaf, Blinds, Heart, CheckCircle } from 'lucide-react'
+import { ArrowRight, Blinds, Building2, CheckCircle, Heart, Leaf, Paintbrush, Phone, Snowflake, Truck } from 'lucide-react'
 import Link from 'next/link'
-import { sisterCompanies, primeGroupInfo } from '@/lib/prime-group-data'
 
 const iconMap: Record<string, any> = {
   Paintbrush,
@@ -21,7 +21,7 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.15),transparent_50%)]" />
-        
+
         <div className="container-custom relative z-10 text-white">
           <div className="max-w-5xl mx-auto text-center">
             <motion.div
@@ -112,8 +112,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sisterCompanies.map((company, index) => {
-              const IconComponent = iconMap[company.icon]
-              
+              const IconComponent = iconMap[company.icon] || Building2
+
               return (
                 <motion.div
                   key={company.slug}
@@ -125,7 +125,7 @@ export default function HomePage() {
                   <Link href={`/companies/${company.slug}`} className="group block h-full">
                     <div className="card p-8 h-full hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                       <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${company.accentColor} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                        {IconComponent && <IconComponent className="h-8 w-8 text-white" />}
+                        <IconComponent className="h-8 w-8 text-white" />
                       </div>
 
                       <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
