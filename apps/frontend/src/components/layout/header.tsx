@@ -9,6 +9,7 @@ import { DarkModeToggle } from '../ui/dark-mode-toggle'
 const navigation = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
+  { name: 'Companies', href: '/companies' },
   { name: 'Services', href: '/services' },
   { name: 'Portfolio', href: '/portfolio' },
   { name: 'Blog', href: '/blog' },
@@ -19,12 +20,12 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white dark:bg-slate-950 shadow-sm sticky top-0 z-50 border-b border-gray-200 dark:border-slate-800">
       <nav className="container-custom">
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="relative group">
             <span className="text-2xl md:text-3xl font-display font-bold gradient-text">
-              Prime Staffing
+              Prime Group Ltd
             </span>
           </Link>
 

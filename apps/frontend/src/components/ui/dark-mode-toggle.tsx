@@ -5,25 +5,27 @@ import { useEffect, useState } from 'react'
 
 export function DarkModeToggle() {
   const [darkMode, setDarkMode] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const isDark = localStorage.getItem('darkMode') === 'true'
-    setDarkMode(isDark)
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    }
+    setMounted(true)
+    const saved = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const shouldDark = saved === 'dark' || (!saved && prefersDark)
+
+    setDarkMode(shouldDark)
+    document.documentElement.classList.toggle('dark', shouldDark)
   }, [])
 
   const toggleDarkMode = () => {
     const newMode = !darkMode
     setDarkMode(newMode)
-    localStorage.setItem('darkMode', String(newMode))
-    
-    if (newMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    localStorage.setItem('theme', newMode ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark', newMode)
+  }
+
+  if (!mounted) {
+    return <div className="w-[52px] h-[52px]" />
   }
 
   return (

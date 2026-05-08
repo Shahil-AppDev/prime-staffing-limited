@@ -1,10 +1,9 @@
 'use client'
 
 import { projectsApi } from '@/lib/api'
+import { getPlaceholder } from '@/lib/placeholders'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import Image from 'next/image'
-import { getPlaceholder } from '@/lib/placeholders'
 
 const PRIME_GROUP_PROJECTS = [
   {
@@ -101,13 +100,13 @@ export default function PortfolioPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+      <section className="section-padding bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 dark:from-slate-950 dark:via-blue-950 dark:to-slate-950 text-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
               Our Portfolio
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100">
+            <p className="text-xl md:text-2xl text-blue-100 dark:text-blue-200">
               Explore successful projects delivered by Prime Group Ltd sister companies across Mauritius
             </p>
           </div>
@@ -115,12 +114,12 @@ export default function PortfolioPage() {
       </section>
 
       {/* Projects Grid */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white dark:bg-slate-950">
         <div className="container-custom">
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="text-gray-600 mt-4">Loading projects...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <p className="text-gray-600 dark:text-gray-400 mt-4">Loading projects...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -128,29 +127,28 @@ export default function PortfolioPage() {
                 <Link
                   key={project.id}
                   href={`/portfolio/${project.id}`}
-                  className="card group overflow-hidden"
+                  className="card group overflow-hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800"
                 >
-                  <div className="relative h-64 overflow-hidden">
-                    <Image
+                  <div className="relative h-64 overflow-hidden bg-gray-100 dark:bg-slate-800">
+                    <img
                       src={getPlaceholder(project.category)}
                       alt={project.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="p-6">
-                    <div className="text-xs font-semibold text-blue-600 mb-2">
+                    <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">
                       {project.company || 'Prime Group Ltd'}
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{project.description}</p>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-medium">
                         {project.category}
                       </span>
-                      <span className="text-gray-500">
+                      <span className="text-gray-500 dark:text-gray-400">
                         {new Date(project.createdAt).getFullYear()}
                       </span>
                     </div>

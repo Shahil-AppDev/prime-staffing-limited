@@ -7,9 +7,9 @@ export function Footer() {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="text-xl font-display font-bold text-white mb-4">Prime Staffing Ltd</h3>
+            <h3 className="text-xl font-display font-bold text-white mb-4">Prime Group Ltd</h3>
             <p className="text-gray-400">
-              Connecting exceptional talent with outstanding opportunities through expert staffing solutions.
+              Diversified business solutions across decoration, cooling, logistics, renewable energy, blinds manufacturing and healthcare in Mauritius.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-primary-400 transition-colors" aria-label="Facebook">
@@ -81,7 +81,7 @@ export function Footer() {
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
           <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} Prime Staffing Ltd. All rights reserved.
+            &copy; {new Date().getFullYear()} Prime Group Ltd. All rights reserved.
           </p>
         </div>
       </div>

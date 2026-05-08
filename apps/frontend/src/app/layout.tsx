@@ -1,21 +1,21 @@
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { Providers } from '@/components/providers'
+import { FloatingActionButton } from '@/components/ui/floating-action-button'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { FloatingActionButton } from '@/components/ui/floating-action-button'
-import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Prime Staffing Ltd - Professional Staffing & Recruitment Solutions',
-  description: 'Transform your workforce with Prime Staffing Ltd. Award-winning staffing and recruitment services for businesses of all sizes. Professional talent acquisition, temporary staffing, and permanent placement solutions.',
-  keywords: 'staffing agency, recruitment services, talent acquisition, temporary staffing, permanent placement, workforce solutions, hiring solutions, employment agency, job placement, prime staffing ltd',
-  authors: [{ name: 'Prime Staffing Ltd' }],
-  creator: 'Prime Staffing Ltd',
-  publisher: 'Prime Staffing Ltd',
+  title: 'Prime Group Ltd - Diversified Business Solutions in Mauritius',
+  description: 'Prime Group Ltd operates across six specialized sectors in Mauritius: decoration, cooling, logistics, renewable energy, blinds manufacturing and healthcare. Professional business solutions for all industries.',
+  keywords: 'prime group mauritius, business solutions mauritius, decoration mauritius, hvac mauritius, logistics mauritius, renewable energy mauritius, blinds mauritius, healthcare mauritius',
+  authors: [{ name: 'Prime Group Ltd' }],
+  creator: 'Prime Group Ltd',
+  publisher: 'Prime Group Ltd',
   robots: {
     index: true,
     follow: true,
@@ -30,15 +30,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'http://localhost:3000',
-    title: 'Prime Staffing Ltd - Professional Staffing & Recruitment Solutions',
-    description: 'Transform your workforce with Prime Staffing Ltd. Award-winning staffing and recruitment services for businesses of all sizes. Professional talent acquisition, temporary staffing, and permanent placement solutions.',
-    siteName: 'Prime Staffing Ltd',
+    url: 'https://primestaffingltd.com',
+    title: 'Prime Group Ltd - Diversified Business Solutions in Mauritius',
+    description: 'Prime Group Ltd operates across six specialized sectors in Mauritius: decoration, cooling, logistics, renewable energy, blinds manufacturing and healthcare.',
+    siteName: 'Prime Group Ltd',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prime Staffing Ltd - Professional Staffing Solutions',
-    description: 'Transform your workforce with expert staffing and recruitment services.',
+    title: 'Prime Group Ltd - Diversified Business Solutions',
+    description: 'Professional business solutions across six specialized sectors in Mauritius.',
   },
 }
 
