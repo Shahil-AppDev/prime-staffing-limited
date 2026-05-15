@@ -46,12 +46,16 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
         - NEXT_PUBLIC_SITE_URL=https://primestaffingltd.com
+        - NEXT_PUBLIC_SITE_SUSPENDED=${NEXT_PUBLIC_SITE_SUSPENDED:-false}
+        - NEXT_PUBLIC_UNLOCK_TOKEN=${NEXT_PUBLIC_UNLOCK_TOKEN:-}
     container_name: prime-staffing-frontend
     restart: always
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=https://api.primestaffingltd.com/api
       - NEXT_PUBLIC_SITE_URL=https://primestaffingltd.com
+      - NEXT_PUBLIC_SITE_SUSPENDED=${NEXT_PUBLIC_SITE_SUSPENDED:-false}
+      - NEXT_PUBLIC_UNLOCK_TOKEN=${NEXT_PUBLIC_UNLOCK_TOKEN:-}
       - HOSTNAME=0.0.0.0
       - PORT=3000
     ports:
