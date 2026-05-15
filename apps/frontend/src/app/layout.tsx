@@ -1,6 +1,7 @@
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { Providers } from '@/components/providers'
+import { SuspensionGate } from '@/components/SuspensionGate'
 import { FloatingActionButton } from '@/components/ui/floating-action-button'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import type { Metadata } from 'next'
@@ -51,13 +52,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
         <Providers>
-          <ScrollProgress />
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-          <FloatingActionButton />
+          <SuspensionGate>
+            <ScrollProgress />
+            <Header />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+            <FloatingActionButton />
+          </SuspensionGate>
         </Providers>
       </body>
     </html>
