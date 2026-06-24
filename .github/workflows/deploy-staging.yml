@@ -1,0 +1,173 @@
+# Pilot — Hetzner CPX52 staging (workflow_dispatch only until first green run)
+name: Deploy Staging (Hetzner CPX52)
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: Skip unit tests (emergency only)
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+concurrency:
+  group: prime-staffing-hetzner-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_ID: ${{ github.sha }}-${{ github.run_number }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8.15.0'
+
+jobs:
+  ci:
+    name: CI — lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        if: inputs.skip_tests != 'true'
+        run: pnpm --filter @rajiv/backend test -- --passWithNoTests
+
+  deploy:
+    name: Deploy — atomic release
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.HETZNER_DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.HETZNER_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Verify SSH
+        run: |
+          ssh -p "${{ secrets.HETZNER_DEPLOY_PORT }}" \
+            "${{ secrets.HETZNER_DEPLOY_USER }}@${{ secrets.HETZNER_DEPLOY_HOST }}" \
+            "echo SSH_DEPLOY_OK"
+
+      - name: Package release
+        run: |
+          tar -czf "/tmp/${{ env.RELEASE_ID }}.tar.gz" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            --exclude='.env.production' \
+            --exclude='dist' \
+            --exclude='.next' \
+            --exclude='apps/*/.next' \
+            --exclude='apps/*/dist' \
+            .
+
+      - name: Upload release archive
+        run: |
+          scp -P "${{ secrets.HETZNER_DEPLOY_PORT }}" \
+            "/tmp/${{ env.RELEASE_ID }}.tar.gz" \
+            "${{ secrets.HETZNER_DEPLOY_USER }}@${{ secrets.HETZNER_DEPLOY_HOST }}:/tmp/${{ env.RELEASE_ID }}.tar.gz"
+
+      - name: Deploy release on server
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          RELEASE_ID: ${{ env.RELEASE_ID }}
+        run: |
+          ssh -p "${{ secrets.HETZNER_DEPLOY_PORT }}" \
+            "${{ secrets.HETZNER_DEPLOY_USER }}@${{ secrets.HETZNER_DEPLOY_HOST }}" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' RELEASE_ID='${RELEASE_ID}' GITHUB_SHA='${{ github.sha }}' bash -s" <<'REMOTE'
+          set -euo pipefail
+          BASE="${DEPLOY_PATH}"
+          RELEASE_DIR="${BASE}/releases/${RELEASE_ID}"
+          TMP_DIR="${BASE}/releases/${RELEASE_ID}.tmp"
+          PREVIOUS_RELEASE="$(readlink -f "${BASE}/current" 2>/dev/null || true)"
+
+          rm -rf "${TMP_DIR}"
+          mkdir -p "${TMP_DIR}" "${BASE}/shared/logs" "${BASE}/shared/data/postgres"
+          tar -xzf "/tmp/${RELEASE_ID}.tar.gz" -C "${TMP_DIR}"
+          rm -f "/tmp/${RELEASE_ID}.tar.gz"
+
+          if [[ -f "${BASE}/shared/.env" ]]; then
+            ln -sfn "${BASE}/shared/.env" "${TMP_DIR}/.env.production"
+          else
+            echo "Missing ${BASE}/shared/.env" >&2
+            exit 1
+          fi
+
+          export STAGING_DATA_DIR="${BASE}/shared/data"
+          mv "${TMP_DIR}" "${RELEASE_DIR}"
+          ln -sfn "${RELEASE_DIR}" "${BASE}/current"
+
+          cd "${BASE}/current"
+          docker compose -f docker-compose.staging.yml --env-file .env.production down --remove-orphans 2>/dev/null || true
+          docker compose -f docker-compose.staging.yml --env-file .env.production up -d --build --remove-orphans
+
+          for i in $(seq 1 60); do
+            if curl -fsS --max-time 5 http://127.0.0.1:4012/api/health >/dev/null 2>&1; then
+              break
+            fi
+            if [[ "$i" -eq 60 ]]; then
+              echo "Backend health timeout" >&2
+              if [[ -n "${PREVIOUS_RELEASE}" && -d "${PREVIOUS_RELEASE}" ]]; then
+                ln -sfn "${PREVIOUS_RELEASE}" "${BASE}/current"
+                cd "${BASE}/current"
+                docker compose -f docker-compose.staging.yml --env-file .env.production up -d --build --remove-orphans || true
+              fi
+              exit 1
+            fi
+            sleep 5
+          done
+
+          curl -fsS --max-time 10 http://127.0.0.1:3009 >/dev/null
+          curl -fsS --max-time 10 http://127.0.0.1:3010 >/dev/null
+
+          ls -dt "${BASE}/releases"/* 2>/dev/null | grep -v '\.tmp$' | tail -n +4 | xargs -r rm -rf
+          echo "DEPLOY_OK release=${RELEASE_ID} previous=${PREVIOUS_RELEASE:-none}"
+          REMOTE
+
+      - name: Health check (workflow)
+        run: |
+          ssh -p "${{ secrets.HETZNER_DEPLOY_PORT }}" \
+            "${{ secrets.HETZNER_DEPLOY_USER }}@${{ secrets.HETZNER_DEPLOY_HOST }}" \
+            "curl -fsS --max-time 20 http://127.0.0.1:4012/api/health | grep -q healthy"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          ssh -p "${{ secrets.HETZNER_DEPLOY_PORT }}" \
+            "${{ secrets.HETZNER_DEPLOY_USER }}@${{ secrets.HETZNER_DEPLOY_HOST }}" \
+            "DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}' bash -s" <<'REMOTE' || true
+          set -euo pipefail
+          BASE="${DEPLOY_PATH}"
+          PREV=$(ls -dt "${BASE}/releases"/* 2>/dev/null | grep -v '\.tmp$' | sed -n '2p')
+          if [[ -n "$PREV" ]]; then
+            ln -sfn "$PREV" "${BASE}/current"
+            cd "${BASE}/current"
+            docker compose -f docker-compose.staging.yml --env-file .env.production up -d --build --remove-orphans || true
+            echo ROLLBACK_OK
+          fi
+          REMOTE

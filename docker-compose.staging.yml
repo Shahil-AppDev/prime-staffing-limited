@@ -1,0 +1,95 @@
+# Staging overlay — Hetzner shahil-core-cloud-01
+# Usage: docker compose -f docker-compose.staging.yml --env-file .env.production up -d --build
+# Postgres data persists under shared/data/postgres (outside release dir).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prime-staffing-staging-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-primestaffing_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-primestaffing_staging}
+    volumes:
+      - ${STAGING_DATA_DIR:-./shared/data}/postgres:/var/lib/postgresql/data
+    networks:
+      - prime-staffing-staging-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-primestaffing_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5433:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: prime-staffing-staging-backend
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-primestaffing_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-primestaffing_staging}?schema=public
+    ports:
+      - "127.0.0.1:4012:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - prime-staffing-staging-network
+    command: sh -c "cd /app/apps/backend && npx prisma generate && npx prisma migrate deploy && node dist/main.js"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+        - NEXT_PUBLIC_SITE_SUSPENDED=${NEXT_PUBLIC_SITE_SUSPENDED:-false}
+        - NEXT_PUBLIC_UNLOCK_TOKEN=${NEXT_PUBLIC_UNLOCK_TOKEN:-}
+    container_name: prime-staffing-staging-frontend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
+    ports:
+      - "127.0.0.1:3009:3000"
+    networks:
+      - prime-staffing-staging-network
+    depends_on:
+      - backend
+
+  admin:
+    build:
+      context: .
+      dockerfile: docker/admin/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
+    container_name: prime-staffing-staging-admin
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
+    ports:
+      - "127.0.0.1:3010:3000"
+    networks:
+      - prime-staffing-staging-network
+    depends_on:
+      - backend
+
+networks:
+  prime-staffing-staging-network:
+    name: prime-staffing-staging-network
+    driver: bridge
