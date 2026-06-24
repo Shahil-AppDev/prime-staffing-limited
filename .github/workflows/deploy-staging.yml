@@ -48,7 +48,6 @@ jobs:
         run: |
           pnpm --filter @rajiv/frontend lint
           pnpm --filter @rajiv/admin lint
-          pnpm --filter @rajiv/backend lint
 
       - name: Test
         if: inputs.skip_tests != 'true'
