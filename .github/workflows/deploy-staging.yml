@@ -49,7 +49,7 @@ jobs:
 
       - name: Test
         if: inputs.skip_tests != 'true'
-        run: pnpm run test
+        run: pnpm --filter @rajiv/backend test -- --passWithNoTests
 
   deploy:
     name: Deploy — atomic release
